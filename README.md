@@ -232,10 +232,3 @@ app.get('/api/reports/:reportId', async (req, res) => {
    - Slice: Chọn một chiều và một giá trị, sau đó nhấn nút Slice
    - Pivot: Chọn chiều cho hàng và cột, sau đó nhấn nút Pivot
 4. Xuất dữ liệu: Nhấn nút "Xuất Excel" để tải dữ liệu dưới dạng file CSV với hỗ trợ đầy đủ tiếng Việt (UTF-8)
-
-## Phát triển thêm
-
-- Thêm biểu đồ trực quan hóa dữ liệu
-- Tích hợp với các nguồn dữ liệu khác
-- Thêm tính năng lưu và chia sẻ báo cáo
-- Cải thiện giao diện người dùng và trải nghiệm người dùng
