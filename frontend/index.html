@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ thống báo cáo kho dữ liệu</title>
+    <!-- Tailwind CSS từ CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- React từ CDN -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <!-- Babel để sử dụng JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- Chart.js để vẽ biểu đồ -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS tùy chỉnh -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="bg-gray-100">
+    <div id="root"></div>
+
+    <!-- Script chính của ứng dụng -->
+    <script type="text/babel" src="js/services/api.js"></script>
+    <script type="text/babel" src="js/components/Dashboard.js"></script>
+    <script type="text/babel" src="js/components/ReportTable.js"></script>
+    <script type="text/babel" src="js/components/FilterPanel.js"></script>
+    <script type="text/babel" src="js/components/OlapControls.js"></script>
+    <script type="text/babel" src="js/app.js"></script>
+</body>
+</html>

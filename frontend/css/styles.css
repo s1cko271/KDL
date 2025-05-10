@@ -1,0 +1,110 @@
+/* Styles for OLAP Dashboard */
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Table styles */
+.olap-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.olap-table th {
+    background-color: #4a5568;
+    color: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.olap-table th, .olap-table td {
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+}
+
+.olap-table tr:nth-child(even) {
+    background-color: #f8fafc;
+}
+
+.olap-table tr:hover {
+    background-color: #e2e8f0;
+}
+
+/* Dashboard card styles */
+.dashboard-card {
+    transition: all 0.3s ease;
+}
+
+.dashboard-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* Filter panel styles */
+.filter-badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: #edf2f7;
+    border-radius: 9999px;
+    padding: 0.25rem 0.75rem;
+    margin: 0.25rem;
+    font-size: 0.75rem;
+}
+
+.filter-badge button {
+    margin-left: 0.5rem;
+    color: #a0aec0;
+}
+
+.filter-badge button:hover {
+    color: #e53e3e;
+}
+
+/* OLAP control buttons */
+.olap-button {
+    transition: all 0.2s ease;
+}
+
+.olap-button:hover {
+    transform: scale(1.05);
+}
+
+.olap-button:active {
+    transform: scale(0.95);
+}
+
+/* Loading spinner */
+.spinner {
+    border: 4px solid rgba(0, 0, 0, 0.1);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border-left-color: #3182ce;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
