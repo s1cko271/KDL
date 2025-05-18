@@ -20,27 +20,27 @@ const OlapControls = ({ onDrillDown, onRollUp, onSlice, onDice, onPivot, current
     const getDimensions = () => {
         // Các chiều thời gian từ Dim_Time cho tất cả các báo cáo
         const timeDimensions = [
-            { id: 'years', label: 'Năm', level: 1 },
-            { id: 'quarters', label: 'Quý', level: 2 },
-            { id: 'months', label: 'Tháng', level: 3 },
-            { id: 'time_key', label: 'Ngày', level: 4 },
+            { id: 'year', label: 'Năm', level: 1 },
+            { id: 'quarter', label: 'Quý', level: 2 },
+            { id: 'month', label: 'Tháng', level: 3 },
+            { id: 'day', label: 'Ngày', level: 4 },
         ];
 
-        // Các chiều địa lý từ Dim_City
+        // Các chiều địa lý từ Dim_City/Dim_Store
         const geoDimensions = [
             { id: 'region', label: 'Vùng miền', level: 1 },
-            { id: 'states', label: 'Tỉnh/Thành phố', level: 2 },
-            { id: 'city_name', label: 'Quận/Huyện', level: 3 },
-            { id: 'store_key', label: 'Cửa hàng', level: 4 },
+            { id: 'city', label: 'Tỉnh/Thành phố', level: 2 },
+            { id: 'district', label: 'Quận/Huyện', level: 3 },
+            { id: 'store', label: 'Cửa hàng', level: 4 },
         ];
         
         // Các chiều sản phẩm từ Dim_Item
         const productDimensions = [
             { id: 'category', label: 'Danh mục sản phẩm', level: 1 },
             { id: 'brand', label: 'Thương hiệu', level: 2 },
-            { id: 'descriptions', label: 'Sản phẩm', level: 3 },
+            { id: 'product', label: 'Sản phẩm', level: 3 },
             { id: 'size', label: 'Kích thước', level: 4 },
-            { id: 'price', label: 'Giá', level: 4 },
+            { id: 'price', label: 'Giá', level: 5 },
         ];
 
         // Các chiều riêng cho từng loại báo cáo
@@ -74,23 +74,23 @@ const OlapControls = ({ onDrillDown, onRollUp, onSlice, onDice, onPivot, current
         // Giá trị dựa trên cấu trúc kho dữ liệu thực tế
         switch(dimension) {
             // Chiều thời gian (Dim_Time)
-            case 'years':
+            case 'year':
                 return [2020, 2021, 2022, 2023, 2024];
-            case 'quarters':
+            case 'quarter':
                 return [1, 2, 3, 4];
-            case 'months':
+            case 'month':
                 return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-            case 'time_key':
+            case 'day':
                 return [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30]; // Ngày trong tháng
                 
-            // Chiều địa lý (Dim_City)
+            // Chiều địa lý
             case 'region':
                 return ['Miền Bắc', 'Miền Trung', 'Miền Nam'];
-            case 'states':
+            case 'city':
                 return ['Hà Nội', 'TP.HCM', 'Đà Nẵng', 'Cần Thơ', 'Hải Phòng', 'Huế', 'Nha Trang', 'Vũng Tàu', 'Đà Lạt', 'Quảng Ninh'];
-            case 'city_name':
+            case 'district':
                 return ['Quận 1', 'Quận 2', 'Quận 3', 'Quận Hoàn Kiếm', 'Quận Ba Đình', 'Quận Hải Châu', 'Quận Ninh Kiều', 'Quận Ngô Quyền', 'Quận Thanh Khê', 'Quận Cẩm Lệ'];
-            case 'store_key':
+            case 'store':
                 return ['CH001', 'CH002', 'CH003', 'CH004', 'CH005', 'CH006', 'CH007', 'CH008', 'CH009', 'CH010'];
                 
             // Chiều sản phẩm (Dim_Item)
@@ -98,7 +98,7 @@ const OlapControls = ({ onDrillDown, onRollUp, onSlice, onDice, onPivot, current
                 return ['Điện tử', 'Thời trang', 'Đồ gia dụng', 'Thực phẩm', 'Mỹ phẩm'];
             case 'brand':
                 return ['Samsung', 'Apple', 'Sony', 'LG', 'Panasonic', 'Toshiba', 'Adidas', 'Nike', 'Uniqlo', 'H&M'];
-            case 'descriptions':
+            case 'product':
                 return ['Điện thoại thông minh', 'Máy tính xách tay', 'Tivi', 'Tủ lạnh', 'Máy giặt', 'Áo thun', 'Quần jeans', 'Giày thể thao', 'Nồi cơm điện', 'Máy lọc không khí'];
             case 'size':
                 return ['S', 'M', 'L', 'XL', 'XXL', '32 inch', '42 inch', '55 inch', '250L', '350L'];
@@ -502,11 +502,7 @@ const OlapControls = ({ onDrillDown, onRollUp, onSlice, onDice, onPivot, current
                     <div className="mt-4 p-3 bg-gray-50 rounded-md text-sm text-gray-600">
                         <h4 className="font-medium text-gray-700 mb-2">Giải thích các thao tác OLAP:</h4>
                         <ul className="list-disc pl-5 space-y-1">
-                            <li><strong>Drill-down:</strong> Đi sâu vào chi tiết hơn theo phân cấp của chiều dữ liệu. Ví dụ: từ <code>years</code> → <code>quarters</code> → <code>months</code> → <code>time_key</code> hoặc từ <code>states</code> → <code>city_name</code> → <code>store_key</code>.</li>
-                            <li><strong>Roll-up:</strong> Quay trở lại mức tổng hợp cao hơn trong phân cấp. Ví dụ: từ <code>time_key</code> → <code>months</code> → <code>quarters</code> → <code>years</code>.</li>
-                            <li><strong>Slice:</strong> Lọc dữ liệu theo một giá trị cụ thể của một chiều. Ví dụ: chỉ xem dữ liệu của <code>years = 2023</code> hoặc <code>city_name = 'Vanghaven'</code>.</li>
-                            <li><strong>Dice:</strong> Lọc dữ liệu theo nhiều chiều (thông qua bộ lọc). Ví dụ: chỉ xem dữ liệu của <code>years = 2023</code> và <code>city_name = 'Vanghaven'</code> và <code>customer_name = 'Gary Morales'</code>.</li>
-                            <li><strong>Pivot:</strong> Xoay trục dữ liệu để phân tích từ góc nhìn khác. Ví dụ: chuyển từ phân tích theo <code>city_name</code> và <code>years</code> sang phân tích theo <code>years</code> và <code>city_name</code>.</li>
+                                                <li><strong>Drill-down:</strong> Đi sâu vào chi tiết hơn theo phân cấp của chiều dữ liệu. Ví dụ: từ <code>year</code> → <code>quarter</code> → <code>month</code> → <code>day</code> hoặc từ <code>city</code> → <code>district</code> → <code>store</code>.</li>                            <li><strong>Roll-up:</strong> Quay trở lại mức tổng hợp cao hơn trong phân cấp. Ví dụ: từ <code>day</code> → <code>month</code> → <code>quarter</code> → <code>year</code>.</li>                            <li><strong>Slice:</strong> Lọc dữ liệu theo một giá trị cụ thể của một chiều. Ví dụ: chỉ xem dữ liệu của <code>year = 2023</code> hoặc <code>city = 'Vanghaven'</code>.</li>                            <li><strong>Dice:</strong> Lọc dữ liệu theo nhiều chiều (thông qua bộ lọc). Ví dụ: chỉ xem dữ liệu của <code>year = 2023</code> và <code>city = 'Vanghaven'</code> và <code>customer_name = 'Gary Morales'</code>.</li>                            <li><strong>Pivot:</strong> Xoay trục dữ liệu để phân tích từ góc nhìn khác. Ví dụ: chuyển từ phân tích theo <code>city</code> và <code>year</code> sang phân tích theo <code>year</code> và <code>city</code>.</li>
                         </ul>
                     </div>
                 </div>

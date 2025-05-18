@@ -24,8 +24,8 @@ Tài liệu này hướng dẫn cách cài đặt và chạy ứng dụng Dashbo
      ```
      npm run dev
      ```
-   - Server sẽ khởi động tại địa chỉ http://localhost:5000
-   - Để kiểm tra server đã hoạt động, mở trình duyệt và truy cập http://localhost:5000
+   - Server sẽ khởi động tại địa chỉ http://localhost:5001
+   - Để kiểm tra server đã hoạt động, mở trình duyệt và truy cập http://localhost:5001
 
 ## Chạy Frontend
 
@@ -55,7 +55,7 @@ Có hai cách để chạy frontend:
 ## Lưu ý quan trọng
 
 - **Cả Backend và Frontend đều phải được chạy đồng thời** để ứng dụng hoạt động đúng
-- Đảm bảo không có ứng dụng nào khác đang sử dụng cổng 5000 khi chạy backend
+- Đảm bảo không có ứng dụng nào khác đang sử dụng cổng 5001 khi chạy backend
 - Nếu gặp lỗi CORS khi kết nối frontend với backend, hãy đảm bảo rằng backend đã được cấu hình đúng để chấp nhận các yêu cầu từ nguồn gốc khác
 
 ## Kết nối với Kho Dữ liệu thực tế

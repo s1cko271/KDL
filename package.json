@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "node-adodb": "^5.0.3"
+  }
+}

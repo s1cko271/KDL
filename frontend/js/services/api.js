@@ -3,7 +3,7 @@
 // Đối tượng API chính
 const api = {
     // URL cơ sở của API
-    baseUrl: 'http://localhost:5000/api',
+    baseUrl: 'http://localhost:5001/api',
 
     // Hàm lấy dữ liệu báo cáo
     getReportData: async (reportId, filters = {}, level = 0) => {
@@ -21,13 +21,16 @@ const api = {
                         level: level
                     }).toString();
                     
+                    console.log(`Gọi API: ${api.baseUrl}/reports/${reportId}?${queryParams}`);
                     const dataResponse = await fetch(`${api.baseUrl}/reports/${reportId}?${queryParams}`);
                     
                     if (!dataResponse.ok) {
                         throw new Error(`HTTP error! status: ${dataResponse.status}`);
                     }
                     
-                    return await dataResponse.json();
+                    const result = await dataResponse.json();
+                    console.log("Dữ liệu trả về từ API:", result);
+                    return result;
                 } else {
                     // Backend không phản hồi, sử dụng dữ liệu mẫu
                     console.warn('Backend không phản hồi, sử dụng dữ liệu mẫu');
@@ -40,6 +43,44 @@ const api = {
             }
         } catch (error) {
             console.error('Error fetching report data:', error);
+            throw error;
+        }
+    },
+
+    // Hàm thực hiện truy vấn MDX trực tiếp đến OLAP
+    executeMdxQuery: async (mdxQuery) => {
+        try {
+            const response = await fetch(`${api.baseUrl}/olap`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ mdxQuery }),
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('Error executing MDX query:', error);
+            throw error;
+        }
+    },
+    
+    // Hàm lấy dữ liệu từ DWH (SQL Server)
+    getDwhData: async (queryName) => {
+        try {
+            const response = await fetch(`${api.baseUrl}/dwh/${queryName}`);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error(`Error fetching ${queryName} data:`, error);
             throw error;
         }
     },
@@ -367,3 +408,6 @@ const api = {
         };
     }
 };
+
+// Export API để sử dụng ở các components khác
+window.api = api;

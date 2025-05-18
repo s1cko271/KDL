@@ -14,8 +14,12 @@ const App = () => {
     const [error, setError] = React.useState(null);
     // State cho cấp độ chi tiết hiện tại (dùng cho drill-down/roll-up)
     const [currentLevel, setCurrentLevel] = React.useState(0);
+    // State lưu trữ đường dẫn drill-down để roll-up có thể quay lại đúng cấp trước đó
+    const [drillPath, setDrillPath] = React.useState([]);
     // State cho các cột hiển thị
     const [visibleColumns, setVisibleColumns] = React.useState([]);
+    // State để ẩn/hiện điều khiển OLAP
+    const [showOlapControls, setShowOlapControls] = React.useState(false);
 
     // Danh sách các báo cáo có sẵn
     const availableReports = [
@@ -59,6 +63,7 @@ const App = () => {
         setCurrentReport(reportId);
         setFilters({});
         setCurrentLevel(0);
+        setDrillPath([]);
     };
 
     // Xử lý thay đổi bộ lọc
@@ -66,37 +71,105 @@ const App = () => {
         setFilters({...filters, ...newFilters});
     };
 
+    // Định nghĩa các cặp chiều drill-down
+    const getDrillDownPairs = () => {
+        return {
+            'category': 'brand',
+            'brand': 'product',
+            'product': 'size',
+            'size': 'price',
+            'region': 'city',
+            'city': 'district',
+            'district': 'store',
+            'year': 'quarter',
+            'quarter': 'month',
+            'month': 'day'
+        };
+    };
+
     // Xử lý thao tác drill-down
     const handleDrillDown = (dimension) => {
-        setCurrentLevel(currentLevel + 1);
-        // Thêm thông tin về chiều đang drill-down
-        setFilters({...filters, drillDimension: dimension});
+        const drillDownPairs = getDrillDownPairs();
+        const nextDimension = drillDownPairs[dimension];
+        
+        if (nextDimension) {
+            // Lưu đường dẫn drill-down để có thể roll-up chính xác
+            const newDrillPath = [...drillPath, dimension];
+            setDrillPath(newDrillPath);
+            
+            // Tăng cấp độ chi tiết
+            setCurrentLevel(currentLevel + 1);
+            
+            // Cập nhật filter với chiều hiện tại và chiều tiếp theo
+            setFilters({
+                ...filters, 
+                currentDimension: dimension,
+                nextDimension: nextDimension,
+                drillLevel: currentLevel + 1
+            });
+        } else {
+            console.warn(`Không thể drill-down sâu hơn từ chiều ${dimension}`);
+        }
     };
 
     // Xử lý thao tác roll-up
     const handleRollUp = () => {
-        if (currentLevel > 0) {
+        if (currentLevel > 0 && drillPath.length > 0) {
+            // Lấy ra chiều trước đó từ đường dẫn drill-down
+            const newPath = [...drillPath];
+            const previousDimension = newPath.pop();
+            
+            // Cập nhật đường dẫn và cấp độ
+            setDrillPath(newPath);
             setCurrentLevel(currentLevel - 1);
-            // Xóa thông tin về chiều đang drill-down
+            
+            // Cập nhật filters
             const newFilters = {...filters};
-            delete newFilters.drillDimension;
+            delete newFilters.nextDimension;
+            newFilters.currentDimension = previousDimension;
+            newFilters.drillLevel = currentLevel - 1;
+            
             setFilters(newFilters);
         }
     };
 
-    // Xử lý thao tác slice
+    // Xử lý thao tác slice (lọc theo một chiều)
     const handleSlice = (dimension, value) => {
-        setFilters({...filters, [dimension]: value});
+        // Tạo một bộ lọc mới có duy nhất chiều đã chọn
+        const sliceFilters = {};
+        sliceFilters[dimension] = value;
+        sliceFilters.sliceOperation = true;
+        sliceFilters.sliceDimension = dimension;
+        
+        setFilters(sliceFilters);
     };
 
-    // Xử lý thao tác dice
+    // Xử lý thao tác dice (lọc theo nhiều chiều)
     const handleDice = (filterSet) => {
-        setFilters({...filters, ...filterSet});
+        // Áp dụng tất cả các bộ lọc đồng thời
+        setFilters({
+            ...filterSet,
+            diceOperation: true
+        });
     };
 
-    // Xử lý thao tác pivot
+    // Xử lý thao tác pivot (xoay trục dữ liệu)
     const handlePivot = (rowDimension, colDimension) => {
-        setFilters({...filters, pivotRow: rowDimension, pivotCol: colDimension});
+        if (rowDimension === colDimension) {
+            console.error("Không thể pivot với cùng một chiều cho cả hàng và cột");
+            return;
+        }
+        
+        setFilters({
+            pivotOperation: true,
+            pivotRow: rowDimension,
+            pivotCol: colDimension
+        });
+    };
+
+    // Hàm để bật/tắt điều khiển OLAP
+    const toggleOlapControls = () => {
+        setShowOlapControls(!showOlapControls);
     };
 
     return (
@@ -105,7 +178,7 @@ const App = () => {
             <header className="bg-blue-600 text-white shadow-lg">
                 <div className="container mx-auto px-4 py-4">
                     <h1 className="text-2xl font-bold">Hệ thống Báo cáo Kho Dữ liệu</h1>
-                    <p className="text-blue-100">Phân tích dữ liệu với các thao tác OLAP</p>
+                    <p className="text-blue-100">Phân tích dữ liệu từ DWH</p>
                 </div>
             </header>
 
@@ -125,16 +198,28 @@ const App = () => {
                     reportId={currentReport}
                 />
                 
-                {/* OLAP Controls */}
-                <OlapControls 
-                    onDrillDown={handleDrillDown}
-                    onRollUp={handleRollUp}
-                    onSlice={handleSlice}
-                    onDice={handleDice}
-                    onPivot={handlePivot}
-                    currentLevel={currentLevel}
-                    reportId={currentReport}
-                />
+                {/* OLAP Controls Toggle Button */}
+                <div className="mb-4">
+                    <button 
+                        onClick={toggleOlapControls}
+                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500"
+                    >
+                        {showOlapControls ? "Ẩn điều khiển OLAP" : "Hiện điều khiển OLAP"}
+                    </button>
+                </div>
+                
+                {/* OLAP Controls (chỉ hiển thị khi showOlapControls là true) */}
+                {showOlapControls && (
+                    <OlapControls 
+                        onDrillDown={handleDrillDown}
+                        onRollUp={handleRollUp}
+                        onSlice={handleSlice}
+                        onDice={handleDice}
+                        onPivot={handlePivot}
+                        currentLevel={currentLevel}
+                        reportId={currentReport}
+                    />
+                )}
                 
                 {/* Loading indicator */}
                 {loading && (
